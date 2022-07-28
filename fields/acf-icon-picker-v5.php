@@ -41,7 +41,7 @@ class acf_field_icon_picker extends acf_field {
 
 		$files = array_diff(scandir($this->path), array('.', '..'));
 		foreach ($files as $file) {
-			if( pathinfo($file, PATHINFO_EXTENSION) == 'svg' ){
+			if( pathinfo($file, PATHINFO_EXTENSION) == 'png' ){
 				$exploded = explode('.', $file);
 				$icon = array(
 					'name' => $exploded[0],
@@ -56,15 +56,15 @@ class acf_field_icon_picker extends acf_field {
 
 	function render_field( $field ) {
 		$input_icon = $field['value'] != "" ? $field['value'] : $field['initial_value'];
-		$svg = $this->path . $input_icon . '.svg';
+		$png = $this->path . $input_icon . '.png';
 		?>
 			<div class="acf-icon-picker">
 				<div class="acf-icon-picker__img">
 					<?php
-						if ( file_exists( $svg ) ) {
-							$svg = $this->url . $input_icon . '.svg';
+						if ( file_exists( $png ) ) {
+							$png = $this->url . $input_icon . '.png';
 							echo '<div class="acf-icon-picker__svg">';
-						   	echo '<img src="'.$svg.'" alt=""/>';
+						   	echo '<img src="'.$png.'" alt=""/>';
 						    echo '</div>';
 						}else{
 							echo '<div class="acf-icon-picker__svg">';
@@ -94,11 +94,15 @@ class acf_field_icon_picker extends acf_field {
 		wp_localize_script( 'acf-input-icon-picker', 'iv', array(
 			'path' => $this->url,
 			'svgs' => $this->svgs,
-			'no_icons_msg' => sprintf( esc_html__('To add icons, add your svg files in the /%s folder in your theme.', 'acf-icon-picker'), $this->path_suffix)
+			'no_icons_msg' => sprintf( esc_html__('To add icons, add your png files in the /%s folder in your theme.', 'acf-icon-picker'), $this->path_suffix)
 		) );
 
 		wp_register_style( 'acf-input-icon-picker', "{$url}assets/css/input.css", array('acf-input'), $version );
 		wp_enqueue_style('acf-input-icon-picker');
+	}
+
+	function format_value( $value, $post_id, $field ) {
+		return $this->url . $value . '.png';
 	}
 }
 new acf_field_icon_picker( $this->settings );
